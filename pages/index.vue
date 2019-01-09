@@ -5,12 +5,14 @@
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
+const DEFAULT_TEXT = `{
+  "How to use": "Paste your JSON here and press Ctrl+Enter to format!",
+  "Help": "Check the console for errors if it fails to parse.",
+  "Themes": "Toggle dark/light theme with Ctrl+B",
+  "Share": "Print a shareable URL to the console with Ctrl+L"
+}\n`
 
 export default {
-  components: {
-    Logo
-  },
   data() {
     return {
       darkTheme: true
@@ -54,14 +56,27 @@ export default {
         }
       })
 
-      // TODO: Just for debugging
-      editor.setValue(`{
-  "How to use": "Paste your JSON here and press Ctrl+Enter to format!",
-  "Help": "Check the console for errors if it fails to parse.",
-  "Themes": "Toggle dark/light theme with Ctrl+B"
-}\n`)
+      editor.commands.addCommand({
+        name: 'getShareableLink',
+        bindKey: { win: 'Ctrl+l', mac: 'Ctrl+l' },
+        exec: editor => {
+          this.getShareableLink(editor)
+        }
+      })
 
+      const { d } = this.$route.query
+      let decoded = null
+
+      if (d) {
+        decoded = atob(d)
+      }
+
+      editor.setValue(decoded || DEFAULT_TEXT)
       editor.clearSelection()
+      if (decoded) {
+        editor.gotoLine(1)
+        editor.scrollToLine(1, 1, true)
+      }
       editor.focus()
     }
   },
@@ -92,6 +107,17 @@ export default {
         editor.setTheme('ace/theme/dracula')
         this.darkTheme = true
       }
+    },
+    getShareableLink(editor) {
+      const text = editor.getValue()
+
+      if (!text) {
+        return
+      }
+
+      const blob = btoa(text)
+      const url = `${window.location.href}?d=${blob}`
+      console.log(url)
     }
   }
 }
