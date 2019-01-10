@@ -9,7 +9,8 @@ const DEFAULT_TEXT = `{
   "How to use": "Paste your JSON here and press Ctrl+Enter to format!",
   "Help": "Check the console for errors if it fails to parse.",
   "Themes": "Toggle dark/light theme with Ctrl+B",
-  "Share": "Print a shareable URL to the console with Ctrl+L"
+  "Share": "Print a shareable URL to the console with Ctrl+L",
+  "Source": "View the source on GitHub at https://github.com/kritzware/json"
 }\n`
 
 export default {
