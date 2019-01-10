@@ -7,7 +7,7 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    title: 'JSON',
+    title: 'json.pizza',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
