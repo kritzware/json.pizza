@@ -25,12 +25,12 @@ export default {
 
       /* Plugins */
       require('brace/mode/json')
-      require('brace/theme/dracula')
+      require('brace/theme/vibrant_ink')
       require('brace/theme/github')
 
       const editor = ace.edit('editor')
       editor.getSession().setMode('ace/mode/json')
-      editor.setTheme('ace/theme/dracula')
+      editor.setTheme('ace/theme/vibrant_ink')
 
       editor.setShowPrintMargin(false)
 
@@ -110,7 +110,7 @@ export default {
         editor.setTheme('ace/theme/github')
         this.darkTheme = false
       } else {
-        editor.setTheme('ace/theme/dracula')
+        editor.setTheme('ace/theme/vibrant_ink')
         this.darkTheme = true
       }
     },
