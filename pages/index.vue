@@ -38,6 +38,8 @@ export default {
         fontFamily: 'Roboto Mono',
         fontSize: 15,
         wrap: true,
+        tabSize: 2,
+        useSoftTabs: true,
         indentedSoftWrap: false
       })
 
@@ -64,6 +66,9 @@ export default {
           this.getShareableLink(editor)
         }
       })
+
+      editor.commands.bindKeys({ 'ctrl-l': null })
+      editor.commands.removeCommands(['gotoline', 'find'])
 
       const { d } = this.$route.query
       let decoded = null
