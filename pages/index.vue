@@ -10,7 +10,8 @@ const DEFAULT_TEXT = `{
   "Help": "Check the console for errors if it fails to parse.",
   "Themes": "Toggle dark/light theme with Ctrl+B",
   "Share": "Print a shareable URL to the console with Ctrl+L",
-  "Source": "View the source on GitHub at https://github.com/kritzware/json"
+  "Source": "View the source on GitHub at https://github.com/kritzware/json",
+  "Info": "Press Ctrl+I at anytime for a reminder of these instructions"
 }\n`
 
 export default {
@@ -67,6 +68,14 @@ export default {
         }
       })
 
+      editor.commands.addCommand({
+        name: 'showHelp',
+        bindKey: { win: 'Ctrl+i', mac: 'Ctrl+i' },
+        exec: editor => {
+          this.showHelp(editor)
+        }
+      })
+
       editor.commands.bindKeys({ 'ctrl-l': null })
       editor.commands.removeCommands(['gotoline', 'find'])
 
@@ -77,7 +86,13 @@ export default {
         decoded = atob(d)
       }
 
-      editor.setValue(decoded || DEFAULT_TEXT)
+      const cached = localStorage.getItem('jsoncache')
+      if (cached) {
+        editor.setValue(cached)
+      } else {
+        editor.setValue(decoded || DEFAULT_TEXT)
+      }
+
       editor.clearSelection()
       if (decoded) {
         editor.gotoLine(1)
@@ -100,10 +115,14 @@ export default {
         editor.gotoLine(1)
         editor.scrollToLine(1, 1, true)
         // editor.setReadOnly(true)
+        this.saveJSON(formattedText)
       } catch (err) {
         console.error('Error formatting JSON')
         console.error(err)
       }
+    },
+    saveJSON(text) {
+      localStorage.setItem('jsoncache', text)
     },
     toggleTheme(editor) {
       if (this.darkTheme) {
@@ -124,6 +143,9 @@ export default {
       const blob = btoa(text)
       const url = `${window.location.href}?d=${blob}`
       console.log(url)
+    },
+    showHelp(editor) {
+      alert(DEFAULT_TEXT)
     }
   }
 }
