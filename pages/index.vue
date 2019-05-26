@@ -5,14 +5,17 @@
 </template>
 
 <script>
-const DEFAULT_TEXT = `{
-  "How to use": "Paste your JSON here and press Ctrl+Enter to format!",
+import beautify from 'js-beautify'
+
+const DEFAULT_TEXT = `const help = {
+  "How to use": "Paste your Javascript here and press Ctrl+Enter to format!",
   "Help": "Check the console for errors if it fails to parse.",
   "Themes": "Toggle dark/light theme with Ctrl+B",
-  "Share": "Print a shareable URL to the console with Ctrl+L",
   "Source": "View the source on GitHub at https://github.com/kritzware/json",
   "Info": "Press Ctrl+I at anytime for a reminder of these instructions"
 }\n`
+
+const DARK_THEME = 'dracula'
 
 export default {
   data() {
@@ -25,13 +28,13 @@ export default {
       const ace = await import('brace')
 
       /* Plugins */
-      require('brace/mode/json')
-      require('brace/theme/vibrant_ink')
+      require('brace/mode/javascript')
+      require(`brace/theme/${DARK_THEME}`)
       require('brace/theme/github')
 
       const editor = ace.edit('editor')
-      editor.getSession().setMode('ace/mode/json')
-      editor.setTheme('ace/theme/vibrant_ink')
+      editor.getSession().setMode('ace/mode/javascript')
+      editor.setTheme(`ace/theme/${DARK_THEME}`)
 
       editor.setShowPrintMargin(false)
 
@@ -61,14 +64,6 @@ export default {
       })
 
       editor.commands.addCommand({
-        name: 'getShareableLink',
-        bindKey: { win: 'Ctrl+l', mac: 'Ctrl+l' },
-        exec: editor => {
-          this.getShareableLink(editor)
-        }
-      })
-
-      editor.commands.addCommand({
         name: 'showHelp',
         bindKey: { win: 'Ctrl+i', mac: 'Ctrl+i' },
         exec: editor => {
@@ -86,7 +81,7 @@ export default {
         decoded = atob(d)
       }
 
-      const cached = localStorage.getItem('jsoncache')
+      const cached = localStorage.getItem('jscache')
       if (cached) {
         editor.setValue(cached)
       } else {
@@ -99,6 +94,8 @@ export default {
         editor.scrollToLine(1, 1, true)
       }
       editor.focus()
+      editor.gotoLine(1)
+      editor.scrollToLine(1, 1, true)
     }
   },
   methods: {
@@ -110,39 +107,31 @@ export default {
       }
 
       try {
-        const formattedText = JSON.stringify(JSON.parse(text), null, 2)
-        editor.setValue(formattedText)
+        const formatted = beautify(text, {
+          indent_size: 2,
+          end_with_newline: true,
+          break_chained_methods: true
+        })
+        editor.setValue(formatted)
         editor.gotoLine(1)
         editor.scrollToLine(1, 1, true)
-        // editor.setReadOnly(true)
-        this.saveJSON(formattedText)
+        this.saveJS(formatted)
       } catch (err) {
-        console.error('Error formatting JSON')
+        console.error('Error formating JS')
         console.error(err)
       }
     },
-    saveJSON(text) {
-      localStorage.setItem('jsoncache', text)
+    saveJS(text) {
+      localStorage.setItem('jscache', text)
     },
     toggleTheme(editor) {
       if (this.darkTheme) {
         editor.setTheme('ace/theme/github')
         this.darkTheme = false
       } else {
-        editor.setTheme('ace/theme/vibrant_ink')
+        editor.setTheme(`ace/theme/${DARK_THEME}`)
         this.darkTheme = true
       }
-    },
-    getShareableLink(editor) {
-      const text = editor.getValue()
-
-      if (!text) {
-        return
-      }
-
-      const blob = btoa(text)
-      const url = `${window.location.href}?d=${blob}`
-      console.log(url)
     },
     showHelp(editor) {
       alert(DEFAULT_TEXT)
