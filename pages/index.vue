@@ -2,7 +2,18 @@
   <div class="container">
     <div class="sidebar">
       <div class="icon">🍕</div>
-      <svg :class="{ 'active': info }" class="info-icon" width="25" height="25" xmlns="http://www.w3.org/2000/svg" @click="toggleInfoBox"><path d="M12.5 0C19.3927083 0 25 5.607292 25 12.5S19.3927083 25 12.5 25 0 19.392708 0 12.5 5.6072917 0 12.5 0zm0 2C6.710125 2 2 6.710125 2 12.5S6.710125 23 12.5 23 23 18.289875 23 12.5 18.289875 2 12.5 2zm2.158 16.284c-.661.26-2.952 1.354-4.272.191-.394-.346-.59-.785-.59-1.318 0-.998.328-1.868.919-3.957.104-.395.231-.907.231-1.313 0-.701-.266-.887-.987-.887-.352 0-.742.125-1.095.257l.195-.799c.787-.32 1.775-.71 2.621-.71 1.269 0 2.203.633 2.203 1.837 0 .347-.06.955-.186 1.375l-.73 2.582c-.151.522-.424 1.673-.001 2.014.416.337 1.401.158 1.887-.071l-.195.799zM13.452 8c-.828 0-1.5-.672-1.5-1.5s.672-1.5 1.5-1.5 1.5.672 1.5 1.5-.672 1.5-1.5 1.5z" fill="#FFF" fill-rule="nonzero"/></svg>
+      <div>
+        <div @click="toggleTheme(editor)">
+          <div style="font-size:26px;vertical-align:middle;line-height:1;margin-bottom:24px;cursor:pointer;user-select:none;">
+            <div v-if="darkTheme">🌞</div>
+            <div v-else>🌚</div>
+          </div>
+        </div>
+        <img
+          src="/i.png"
+          style="width:24px;cursor:pointer;margin-left:1px;"
+          @click="toggleInfoBox">
+      </div>
       <transition name="fade">
         <div v-click-outside="hideInfoBox" v-if="info" class="info-box">
           <b>How to use:</b> Paste your JSON in the editor and press <b>Format</b> (Ctrl+Enter).<br>
@@ -18,24 +29,32 @@
       <div id="editor"/>
     </div>
     <div class="action-buttons">
-      <button @click="format(editor)">
+      <button
+        :class="{ 'formatted' : formatted === true }"
+        @click="format(editor)">
         <svg style="margin-right: 10px;" width="16" height="14" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h16v2H0V0zm0 12h16v2H0v-2zm0-4h6v2H0V8zm0-4h6v2H0V4zm12 2V3l4 4-4 4V8H8V6h4z" fill="#FFF" fill-rule="nonzero"/></svg>
         Format
+        <transition name="check-fade">
+          <div v-show="formatted" class="formatted-check">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M6.61 11.89L3.5 8.78 2.44 9.84 6.61 14l8.95-8.95L14.5 4z" fill="#fff"/></svg>
+          </div>
+        </transition>
       </button>
-      <button @click="copy">
+      <button
+        :class="{ 'copied' : copied === true }"
+        @click="copy">
         <svg style="margin-right: 10px;" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M15 5c.6 0 1 .4 1 1v9c0 .6-.4 1-1 1H8c-.6 0-1-.4-1-1V6c0-.6.4-1 1-1h7zM5 4v10H1c-.6 0-1-.4-1-1V1c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v2H6c-.6 0-1 .4-1 1z" fill="#FFF" fill-rule="nonzero"/></svg>
         Copy
+        <transition name="check-fade">
+          <div v-show="copied" class="copied-check">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M6.61 11.89L3.5 8.78 2.44 9.84 6.61 14l8.95-8.95L14.5 4z" fill="#fff"/></svg>
+          </div>
+        </transition>
       </button>
       <!-- <button>
         <svg style="margin-right: 10px;" width="16" height="14" xmlns="http://www.w3.org/2000/svg"><path d="M8 4C2.8 4 0 7.8 0 14c1.5-2.4 2.7-4 8-4v4l8-7-8-7v4z" fill="#FFF" fill-rule="nonzero"/></svg>
         Share
       </button> -->
-      <button @click="toggleTheme(editor)">
-        <div style="font-size:25px;vertical-align:middle;line-height:1">
-          <div v-if="darkTheme">🌞</div>
-          <div v-else>🌚</div>
-        </div>
-      </button>
     </div>
   </div>
 </template>
@@ -70,7 +89,9 @@ export default {
     return {
       darkTheme: true,
       info: false,
-      editor: null
+      editor: null,
+      copied: false,
+      formatted: false
     }
   },
   async mounted() {
@@ -95,6 +116,8 @@ export default {
       this.editor.setTheme('ace/theme/vibrant_ink')
 
       this.editor.setShowPrintMargin(false)
+
+      this.editor.container.style.lineHeight = 1.5
 
       this.editor.setOptions({
         fontFamily: 'Roboto Mono',
@@ -180,6 +203,10 @@ export default {
         console.error('Error formatting JSON')
         console.error(err)
       }
+      this.formatted = true
+      setTimeout(() => {
+        this.formatted = false
+      }, 1250)
     },
     saveJSON(text) {
       localStorage.setItem('jsoncache', text)
@@ -214,6 +241,10 @@ export default {
       this.editor.clearSelection()
       this.editor.gotoLine(1)
       this.editor.scrollToLine(1, 1, true)
+      this.copied = true
+      setTimeout(() => {
+        this.copied = false
+      }, 1250)
     },
     hideInfoBox() {
       if (!this.info) return
@@ -226,13 +257,25 @@ export default {
         localStorage.setItem('jsonpizza:seen-info', 1)
       }
     }
+  },
+  head() {
+    return {
+      htmlAttrs: {
+        class: this.darkTheme ? 'dark-theme' : 'light-theme'
+      }
+    }
   }
 }
 </script>
 
 <style>
-html {
+html.dark-theme {
   background-color: #000;
+  transition: all 0s cubic-bezier(0.19, 1, 0.22, 1);
+}
+html.light-theme {
+  background-color: #efeff1;
+  transition: all 0s cubic-bezier(0.19, 1, 0.22, 1);
 }
 .icon {
   font-size: 30px;
@@ -252,11 +295,11 @@ html {
 }
 .info-box {
   position: fixed;
-  bottom: 60px;
+  bottom: 46px;
   left: 64px;
   width: auto;
   height: auto;
-  background-color: #333;
+  background-color: #171718;
   color: white;
   z-index: 99999;
   border-radius: 6px;
@@ -265,6 +308,7 @@ html {
     sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
   font-size: 14px;
   line-height: 2;
+  box-shadow: 0 16px 40px -4px rgba(0, 0, 5, 0.4);
 }
 .info-box a {
   color: rgba(255, 255, 255, 0.6);
@@ -318,7 +362,7 @@ button {
   padding: 12px 20px 12px 20px;
   height: 47px;
   text-decoration: none;
-  background-color: #232323;
+  background-color: #171718;
   color: white;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial,
     sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
@@ -333,15 +377,68 @@ button {
   -moz-appearance: none;
   border-radius: 6px;
   user-select: none;
+  position: relative;
 }
 button:hover {
-  background-color: #323232;
+  background-color: #212122;
 }
 button:active {
   transform: translateY(1px);
 }
 .action-buttons button {
   margin-left: 8px;
+}
+
+/* Button Feedback */
+
+.copied {
+  position: relative;
+  overflow: hidden;
+}
+.copied:after {
+  content: '';
+  background-color: #009252 !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.copied-check {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 14px;
+  z-index: 999;
+}
+
+.formatted {
+  position: relative;
+  overflow: hidden;
+}
+.formatted:after {
+  content: '';
+  background-color: #009252 !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.formatted-check {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 14px;
+  z-index: 999;
+}
+
+.dark-fill path {
+  fill: #171718;
 }
 
 /*Transitions*/
@@ -359,6 +456,33 @@ button:active {
   100% {
     transform: translateY(0px);
     opacity: 1;
+  }
+}
+
+.check-fade-enter-active {
+  animation: check-fade-in 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.check-fade-leave-active {
+  animation: check-fade-out 0s cubic-bezier(0.19, 1, 0.22, 1);
+}
+@keyframes check-fade-in {
+  0% {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+@keyframes check-fade-out {
+  0% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 0;
   }
 }
 </style>
