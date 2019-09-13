@@ -4,57 +4,78 @@
       <div class="icon">🍕</div>
       <div>
         <div @click="toggleTheme(editor)">
-          <div style="font-size:26px;vertical-align:middle;line-height:1;margin-bottom:24px;cursor:pointer;user-select:none;">
+          <div
+            style="font-size:26px;vertical-align:middle;line-height:1;margin-bottom:24px;cursor:pointer;user-select:none;"
+          >
             <div v-if="darkTheme">🌞</div>
             <div v-else>🌚</div>
           </div>
         </div>
-        <img
-          src="/i.png"
-          style="width:24px;cursor:pointer;margin-left:1px;"
-          @click="toggleInfoBox">
+        <img src="/i.png" style="width:24px;cursor:pointer;margin-left:1px;" @click="toggleInfoBox" />
       </div>
       <transition name="fade">
         <div v-click-outside="hideInfoBox" v-if="info" class="info-box">
-          <b>How to use:</b> Paste your JSON in the editor and press <b>Format</b> (Ctrl+Enter).<br>
+          <b>How to use:</b> Paste your JSON in the editor and press
+          <b>Format</b> (Ctrl+Enter).
+          <br />
           <!-- <b>Share:</b> To copy a shareable URL to your clipboard, click <b>Share</b> (Ctrl+L).<br> -->
-          <b>Errors:</b> Check the console for errors if your JSON fails to parse.<br>
-          <b>Themes:</b> Toggle between dark/light themes by pressing Ctrl+B.<br>
-          <b>Privacy:</b> Your data will not be stored or shared with any third parties.<br>
-          <b>Source:</b> View the source code on <a href="https://github.com/kritzware/json" target="_blank" rel="noopener">GitHub.</a>
+          <b>Errors:</b> Check the console for errors if your JSON fails to parse.
+          <br />
+          <b>Themes:</b> Toggle between dark/light themes by pressing Ctrl+B.
+          <br />
+          <b>Privacy:</b> Your data will not be stored or shared with any third parties.
+          <br />
+          <b>Source:</b> View the source code on
+          <a
+            href="https://github.com/kritzware/json"
+            target="_blank"
+            rel="noopener"
+          >GitHub.</a>
         </div>
       </transition>
     </div>
     <div class="editor">
-      <div id="editor"/>
+      <div id="editor" />
     </div>
     <div class="action-buttons">
-      <button
-        :class="{ 'formatted' : formatted === true }"
-        @click="format(editor)">
-        <svg style="margin-right: 10px;" width="16" height="14" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h16v2H0V0zm0 12h16v2H0v-2zm0-4h6v2H0V8zm0-4h6v2H0V4zm12 2V3l4 4-4 4V8H8V6h4z" fill="#FFF" fill-rule="nonzero"/></svg>
+      <button :class="{ 'formatted' : formatted === true }" @click="format(editor)">
+        <svg style="margin-right: 10px;" width="16" height="14" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M0 0h16v2H0V0zm0 12h16v2H0v-2zm0-4h6v2H0V8zm0-4h6v2H0V4zm12 2V3l4 4-4 4V8H8V6h4z"
+            fill="#FFF"
+            fill-rule="nonzero"
+          />
+        </svg>
         Format
         <transition name="check-fade">
           <div v-show="formatted" class="formatted-check">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M6.61 11.89L3.5 8.78 2.44 9.84 6.61 14l8.95-8.95L14.5 4z" fill="#fff"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+              <path d="M6.61 11.89L3.5 8.78 2.44 9.84 6.61 14l8.95-8.95L14.5 4z" fill="#fff" />
+            </svg>
           </div>
         </transition>
       </button>
-      <button
-        :class="{ 'copied' : copied === true }"
-        @click="copy">
-        <svg style="margin-right: 10px;" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M15 5c.6 0 1 .4 1 1v9c0 .6-.4 1-1 1H8c-.6 0-1-.4-1-1V6c0-.6.4-1 1-1h7zM5 4v10H1c-.6 0-1-.4-1-1V1c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v2H6c-.6 0-1 .4-1 1z" fill="#FFF" fill-rule="nonzero"/></svg>
+      <button :class="{ 'copied' : copied === true }" @click="copy">
+        <svg style="margin-right: 10px;" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M15 5c.6 0 1 .4 1 1v9c0 .6-.4 1-1 1H8c-.6 0-1-.4-1-1V6c0-.6.4-1 1-1h7zM5 4v10H1c-.6 0-1-.4-1-1V1c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v2H6c-.6 0-1 .4-1 1z"
+            fill="#FFF"
+            fill-rule="nonzero"
+          />
+        </svg>
         Copy
         <transition name="check-fade">
           <div v-show="copied" class="copied-check">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M6.61 11.89L3.5 8.78 2.44 9.84 6.61 14l8.95-8.95L14.5 4z" fill="#fff"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+              <path d="M6.61 11.89L3.5 8.78 2.44 9.84 6.61 14l8.95-8.95L14.5 4z" fill="#fff" />
+            </svg>
           </div>
         </transition>
       </button>
       <!-- <button>
         <svg style="margin-right: 10px;" width="16" height="14" xmlns="http://www.w3.org/2000/svg"><path d="M8 4C2.8 4 0 7.8 0 14c1.5-2.4 2.7-4 8-4v4l8-7-8-7v4z" fill="#FFF" fill-rule="nonzero"/></svg>
         Share
-      </button> -->
+      </button>-->
     </div>
   </div>
 </template>
@@ -260,8 +281,10 @@ export default {
   },
   head() {
     return {
-      htmlAttrs: {
-        class: this.darkTheme ? 'dark-theme' : 'light-theme'
+      bodyAttrs: {
+        style: this.darkTheme
+          ? 'background-color: black'
+          : 'background-color: #efeff1'
       }
     }
   }
@@ -269,14 +292,6 @@ export default {
 </script>
 
 <style>
-html.dark-theme {
-  background-color: #000;
-  transition: all 0s cubic-bezier(0.19, 1, 0.22, 1);
-}
-html.light-theme {
-  background-color: #efeff1;
-  transition: all 0s cubic-bezier(0.19, 1, 0.22, 1);
-}
 .icon {
   font-size: 30px;
   padding-left: 2px;

@@ -18,7 +18,7 @@
 }
 
 .ace-vibrant-ink .ace_marker-layer .ace_selection {
-  background: #ff0000 !important;
+  background: rgba(181, 213, 255, 0.4) !important;
 }
 
 .ace-vibrant-ink.ace_multiselect .ace_selection.ace_start {

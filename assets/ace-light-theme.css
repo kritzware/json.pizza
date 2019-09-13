@@ -74,7 +74,7 @@
 }
 
 .ace-github .ace_marker-layer .ace_selection {
-  background: rgb(181, 213, 255);
+  background: rgba(181, 213, 255, 0.4) !important;
 }
 
 .ace-github.ace_multiselect .ace_selection.ace_start {
