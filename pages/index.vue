@@ -131,13 +131,11 @@ export default {
       require('brace/theme/github')
 
       // Editor config
-
       this.editor = ace.edit('editor')
       this.editor.getSession().setMode('ace/mode/json')
       this.editor.setTheme('ace/theme/vibrant_ink')
 
       this.editor.setShowPrintMargin(false)
-
       this.editor.container.style.lineHeight = 1.5
 
       this.editor.setOptions({
@@ -405,7 +403,6 @@ button:active {
 }
 
 /* Button Feedback */
-
 .copied {
   position: relative;
   overflow: hidden;
