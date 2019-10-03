@@ -34,7 +34,10 @@ module.exports = {
   /*
   ** Global CSS
   */
-  css: [],
+  css: [
+    { src: '~/assets/ace-dark-theme.css', lang: 'css' },
+    { src: '~/assets/ace-light-theme.css', lang: 'css' }
+  ],
 
   /*
   ** Plugins to load before mounting the App
