@@ -231,7 +231,7 @@ export default {
       const t1 = performance.now()
       const time = t1 - t0
       this.format_time =
-        time <= 1000 ? `${time.toFixed(0)}ms` : `${(time / 1000).toFixed(1)}s`
+        time < 1100 ? `${time.toFixed(0)}ms` : `${(time / 1000).toFixed(1)}s`
       this.format_time_color =
         time < 1500 ? '#5ce60b' : time < 4000 ? '#ffcd00' : '#c83c1f'
 
