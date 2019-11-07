@@ -38,6 +38,7 @@
       <div id="editor" />
     </div>
     <div class="action-buttons">
+      <p v-if="format_time && formatted" :style="{color:format_time_color}">{{ format_time }}</p>
       <button :class="{ 'formatted' : formatted === true }" @click="format(editor)">
         <svg style="margin-right: 10px;" width="16" height="14" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -112,7 +113,9 @@ export default {
       info: false,
       editor: null,
       copied: false,
-      formatted: false
+      formatted: false,
+      format_time: 0,
+      format_time_color: '#5ce60b'
     }
   },
   async mounted() {
@@ -211,6 +214,8 @@ export default {
         return
       }
 
+      const t0 = performance.now()
+
       try {
         const formattedText = JSON.stringify(JSON.parse(text), null, 2)
         editor.setValue(formattedText)
@@ -222,10 +227,18 @@ export default {
         console.error('Error formatting JSON')
         console.error(err)
       }
+
+      const t1 = performance.now()
+      const time = t1 - t0
+      this.format_time =
+        time < 1100 ? `${time.toFixed(0)}ms` : `${(time / 1000).toFixed(1)}s`
+      this.format_time_color =
+        time < 1500 ? '#5ce60b' : time < 4000 ? '#ffcd00' : '#c83c1f'
+
       this.formatted = true
       setTimeout(() => {
         this.formatted = false
-      }, 1250)
+      }, time < 5000 ? 1250 : 3000)
     },
     saveJSON(text) {
       localStorage.setItem('jsoncache', text)
