@@ -16,12 +16,12 @@
       <transition name="fade">
         <div v-click-outside="hideInfoBox" v-if="info" class="info-box">
           <b>How to use:</b> Paste your JSON in the editor and press
-          <b>Format</b> (Ctrl+Enter).
+          <b>Format</b> ({{ modifier }}+Enter).
           <br />
           <!-- <b>Share:</b> To copy a shareable URL to your clipboard, click <b>Share</b> (Ctrl+L).<br> -->
           <b>Errors:</b> Check the console for errors if your JSON fails to parse.
           <br />
-          <b>Themes:</b> Toggle between dark/light themes by pressing Ctrl+B.
+          <b>Themes:</b> Toggle between dark/light themes by pressing {{ modifier }}+B.
           <br />
           <b>Privacy:</b> Your data will not be stored or shared with any third parties.
           <br />
@@ -98,14 +98,6 @@ Vue.directive('click-outside', {
   }
 })
 
-const DEFAULT_TEXT = `{
-  "How to use": "Paste your JSON in the editor and press Format (Ctrl+Enter).",
-  "Errors": "Check the console for errors if your JSON fails to parse.",
-  "Themes": "Toggle between dark/light theme by pressing Ctrl+B",
-  "Privacy": "Your data will not be stored or shared with any third parties.",
-  "Source": "View the source code on GitHub at https://github.com/kritzware/json"
-}`
-
 export default {
   data() {
     return {
@@ -116,6 +108,24 @@ export default {
       formatted: false,
       format_time: 0,
       format_time_color: '#5ce60b'
+    }
+  },
+  computed: {
+    modifier() {
+      const isMac = navigator.platform.toLowerCase().includes('mac')
+      if (isMac) return 'Cmd'
+      return 'Ctrl'
+    },
+    defaultText() {
+      return `{
+  "How to use": "Paste your JSON in the editor and press Format (${
+    this.modifier
+  }+Enter).",
+  "Errors": "Check the console for errors if your JSON fails to parse.",
+  "Themes": "Toggle between dark/light theme by pressing ${this.modifier}+B",
+  "Privacy": "Your data will not be stored or shared with any third parties.",
+  "Source": "View the source code on GitHub at https://github.com/kritzware/json"
+}`
     }
   },
   async mounted() {
@@ -152,7 +162,7 @@ export default {
 
       this.editor.commands.addCommand({
         name: 'format',
-        bindKey: { win: 'Ctrl+Enter', mac: 'Ctrl+Enter' },
+        bindKey: { win: 'Ctrl+Enter', mac: 'Cmd+Enter' },
         exec: editor => {
           this.format(editor)
         }
@@ -160,7 +170,7 @@ export default {
 
       this.editor.commands.addCommand({
         name: 'toggleTheme',
-        bindKey: { win: 'Ctrl+b', mac: 'Ctrl+b' },
+        bindKey: { win: 'Ctrl+b', mac: 'Cmd+b' },
         exec: editor => {
           this.toggleTheme(editor)
         }
@@ -168,7 +178,7 @@ export default {
 
       this.editor.commands.addCommand({
         name: 'getShareableLink',
-        bindKey: { win: 'Ctrl+l', mac: 'Ctrl+l' },
+        bindKey: { win: 'Ctrl+l', mac: 'Cmd+l' },
         exec: editor => {
           this.getShareableLink(editor)
         }
@@ -176,13 +186,14 @@ export default {
 
       this.editor.commands.addCommand({
         name: 'showHelp',
-        bindKey: { win: 'Ctrl+i', mac: 'Ctrl+i' },
+        bindKey: { win: 'Ctrl+i', mac: 'Cmd+i' },
         exec: editor => {
           this.showHelp(editor)
         }
       })
 
       this.editor.commands.bindKeys({ 'ctrl-l': null })
+      this.editor.commands.bindKeys({ 'cmd-l': null })
       this.editor.commands.removeCommands(['gotoline', 'find'])
 
       const { d } = this.$route.query
@@ -196,7 +207,7 @@ export default {
       if (cached) {
         this.editor.setValue(cached)
       } else {
-        this.editor.setValue(decoded || DEFAULT_TEXT)
+        this.editor.setValue(decoded || this.defaultText)
       }
 
       this.editor.clearSelection()
@@ -264,7 +275,7 @@ export default {
       console.log(url)
     },
     showHelp(editor) {
-      alert(DEFAULT_TEXT)
+      alert(this.defaultText)
     },
     copy() {
       this.editor.selectAll()
