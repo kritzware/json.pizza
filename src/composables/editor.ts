@@ -127,6 +127,7 @@ export function useDiffEditor() {
     );
 
     const diffEditor = monaco.editor.createDiffEditor(
+      // @ts-ignore TODO: Fix this HTMLElement | null warning
       document.getElementById("diff-container"),
       {
         // You can optionally disable the resizing
