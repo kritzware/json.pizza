@@ -39,6 +39,10 @@
     </div>
     <div class="action-buttons">
       <p v-if="format_time && formatted" :style="{color:format_time_color}">{{ format_time }}</p>
+      <button style="background-color: rgb(242, 167, 37);" @click="v2()">
+        <span style="margin-right: 10px;">🎉</span>
+        Try JSON.pizza V2
+      </button>
       <button :class="{ 'formatted' : formatted === true }" @click="format(editor)">
         <svg style="margin-right: 10px;" width="16" height="14" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -299,6 +303,18 @@ export default {
       if (!localStorage.getItem('jsonpizza:seen-info')) {
         localStorage.setItem('jsonpizza:seen-info', 1)
       }
+    },
+    v2() {
+      const text = this.editor.getValue()
+      const url = new URL('https://tools-pizza.vercel.app')
+      if (text) {
+        const blob = btoa(text)
+        url.searchParams.append('data', blob)
+      }
+      url.searchParams.append('utm_source', 'v1')
+      url.searchParams.append('utm_medium', 'legacy_web')
+      url.searchParams.append('utm_content', 'try_v2')
+      window.location.href = url.toString()
     }
   },
   head() {
